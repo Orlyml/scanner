@@ -5,38 +5,39 @@
     <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
     <style>
         body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
-        #qr-reader { margin: 20px auto; width: 300px; }
-        #resultado { font-size: 18px; margin-top: 20px; }
+        #qr-reader { width: 90%; max-width: 400px; margin: 20px auto; }
+        #result { padding: 15px; font-size: 18px; }
+        .valido { color: green; }
+        .invalido { color: red; }
     </style>
 </head>
 <body>
-    <h1>Escanear Ticket QR</h1>
+    <h1>Validador de Tickets</h1>
     <div id="qr-reader"></div>
-    <div id="resultado"></div>
+    <div id="result"></div>
 
     <script>
-        const urlAppsScript = "TU_URL_APPS_SCRIPT"; // Reemplaza con tu URL
+        const API_URL = "TU_URL_DE_APPS_SCRIPT"; // Reemplazar
         
         function onScanSuccess(ticketId) {
-            document.getElementById('resultado').innerText = "Validando...";
+            document.getElementById('result').innerHTML = "Verificando...";
             
-            fetch(`${urlAppsScript}?ticketId=${ticketId}`)
+            fetch(`${API_URL}?ticketId=${ticketId}`)
                 .then(response => response.text())
-                .then(text => {
-                    document.getElementById('resultado').innerText = text;
-                })
-                .catch(error => {
-                    document.getElementById('resultado').innerText = "Error al validar";
+                .then(result => {
+                    const resultDiv = document.getElementById('result');
+                    resultDiv.innerHTML = result;
+                    resultDiv.className = result.includes("✅") ? "valido" : "invalido";
                 });
         }
 
         const html5QrCode = new Html5Qrcode("qr-reader");
         html5QrCode.start(
-            { facingMode: "environment" }, 
+            { facingMode: "environment" },
             { fps: 10, qrbox: 250 },
             onScanSuccess
         ).catch(err => {
-            document.getElementById('resultado').innerText = "Error al iniciar cámara";
+            document.getElementById('result').innerHTML = "Error al iniciar cámara";
         });
     </script>
 </body>
