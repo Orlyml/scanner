@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Validador de Tickets</title>
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
+        #qr-reader { margin: 20px auto; width: 300px; }
+        #resultado { font-size: 18px; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <h1>Escanear Ticket QR</h1>
+    <div id="qr-reader"></div>
+    <div id="resultado"></div>
+
+    <script>
+        const urlAppsScript = "TU_URL_APPS_SCRIPT"; // Reemplaza con tu URL
+        
+        function onScanSuccess(ticketId) {
+            document.getElementById('resultado').innerText = "Validando...";
+            
+            fetch(`${urlAppsScript}?ticketId=${ticketId}`)
+                .then(response => response.text())
+                .then(text => {
+                    document.getElementById('resultado').innerText = text;
+                })
+                .catch(error => {
+                    document.getElementById('resultado').innerText = "Error al validar";
+                });
+        }
+
+        const html5QrCode = new Html5Qrcode("qr-reader");
+        html5QrCode.start(
+            { facingMode: "environment" }, 
+            { fps: 10, qrbox: 250 },
+            onScanSuccess
+        ).catch(err => {
+            document.getElementById('resultado').innerText = "Error al iniciar cámara";
+        });
+    </script>
+</body>
+</html>
